@@ -1,5 +1,6 @@
 package parser;
 
+import scanner.ScannerFacade;
 import scanner.token.Token;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 
 public class Rule {
     public Rule(String stringRule) {
+        ScannerFacade scannerFacade = new ScannerFacade();
         int index = stringRule.indexOf("#");
         if (index != -1) {
             try {
@@ -35,7 +37,7 @@ public class Rule {
                     RHS.add(new GrammarSymbol(NonTerminal.valueOf(s)));
                 } catch (Exception e) {
 //                    try{
-                    RHS.add(new GrammarSymbol(new Token(Token.getTyepFormString(s), s)));
+                    RHS.add(new GrammarSymbol(scannerFacade.getNewToken(s)));
 //                    }catch (IllegalArgumentException d){
 //                        d.printStackTrace();
 //                        Log.print(s);
