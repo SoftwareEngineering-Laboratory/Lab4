@@ -67,9 +67,8 @@ public class SymbolTable {
     }
 
     public Symbol get(String className, String methodName, String variable) {
-        Symbol res = klasses.get(className).Methodes.get(methodName).getVariable(variable);
-        if (res == null) res = get(variable, className);
-        return res;
+        if (klasses.get(className).Methodes.get(methodName).getVariable(variable) == null) return get(variable, className);
+        return klasses.get(className).Methodes.get(methodName).getVariable(variable);
     }
 
     public Symbol getNextParam(String className, String methodName) {
