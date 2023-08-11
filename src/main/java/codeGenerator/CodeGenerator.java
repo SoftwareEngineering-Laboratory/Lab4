@@ -182,15 +182,7 @@ public class CodeGenerator {
             try {
 
                 Symbol s = this.getSymbolTable().get(className, methodName, next.value);
-                varType t = varType.Int;
-                switch (s.type) {
-                    case Bool:
-                        t = varType.Bool;
-                        break;
-                    case Int:
-                        t = varType.Int;
-                        break;
-                }
+                varType t = s.getVarType();
                 this.getSS().push(new Address(s.address, t));
 
 
@@ -210,15 +202,7 @@ public class CodeGenerator {
         this.getSS().pop();
 
         Symbol s = this.getSymbolTable().get(this.getSymbolStack().pop(), this.getSymbolStack().pop());
-        varType t = varType.Int;
-        switch (s.type) {
-            case Bool:
-                t = varType.Bool;
-                break;
-            case Int:
-                t = varType.Int;
-                break;
-        }
+        varType t = s.getVarType();
         this.getSS().push(new Address(s.address, t));
 
     }
@@ -271,15 +255,7 @@ public class CodeGenerator {
         String methodName = this.getCallStack().pop();
         try {
             Symbol s = this.getSymbolTable().getNextParam(this.getCallStack().peek(), methodName);
-            varType t = varType.Int;
-            switch (s.type) {
-                case Bool:
-                    t = varType.Bool;
-                    break;
-                case Int:
-                    t = varType.Int;
-                    break;
-            }
+            varType t = s.getVarType();
             Address param = this.getSS().pop();
             if (param.varType != t) {
                 ErrorHandler.printError("The argument type isn't match");
