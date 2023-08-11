@@ -1,9 +1,9 @@
 package semantic.symbol;
 
+
+import codeGenerator.CodeGeneratorFacade;
 import codeGenerator.Address;
 import codeGenerator.Memory;
-import codeGenerator.TypeAddress;
-import codeGenerator.varType;
 import errorHandler.ErrorHandler;
 
 import java.util.ArrayList;
@@ -12,16 +12,13 @@ import java.util.Map;
 
 public class SymbolTable {
     private Map<String, Klass> klasses;
-    private Map<String, Address> keyWords;
-    private Memory mem;
+    private CodeGeneratorFacade codeGeneratorFacade;
     private SymbolType lastType;
 
     public SymbolTable(Memory memory) {
-        mem = memory;
+        codeGeneratorFacade = new CodeGeneratorFacade();
+        codeGeneratorFacade.setMemory(memory);
         klasses = new HashMap<>();
-        keyWords = new HashMap<>();
-        keyWords.put("true", new Address(1, varType.Bool, TypeAddress.Imidiate));
-        keyWords.put("false", new Address(0, varType.Bool, TypeAddress.Imidiate));
     }
 
     public void setLastType(SymbolType type) {
@@ -36,7 +33,7 @@ public class SymbolTable {
     }
 
     public void addField(String fieldName, String className) {
-        klasses.get(className).Fields.put(fieldName, new Symbol(lastType, mem.getDateAddress()));
+        klasses.get(className).Fields.put(fieldName, new Symbol(lastType, codeGeneratorFacade.getDateAddressMemory()));
     }
 
     public void addMethod(String className, String methodName, int address) {
@@ -55,7 +52,7 @@ public class SymbolTable {
         if (klasses.get(className).Methodes.get(methodName).localVariable.containsKey(localVariableName)) {
             ErrorHandler.printError("This variable already defined");
         }
-        klasses.get(className).Methodes.get(methodName).localVariable.put(localVariableName, new Symbol(lastType, mem.getDateAddress()));
+        klasses.get(className).Methodes.get(methodName).localVariable.put(localVariableName, new Symbol(lastType, codeGeneratorFacade.getDateAddressMemory()));
 //        }catch (NullPointerException e){
 //            e.printStackTrace();
 //        }
@@ -66,7 +63,7 @@ public class SymbolTable {
     }
 
     public Address get(String keywordName) {
-        return keyWords.get(keywordName);
+        return codeGeneratorFacade.getFromKeyWords(keywordName);
     }
 
     public Symbol get(String fieldName, String className) {
@@ -155,8 +152,8 @@ public class SymbolTable {
             this.codeAddress = codeAddress;
             this.returnType = returnType;
             this.orderdParameters = new ArrayList<>();
-            this.returnAddress = mem.getDateAddress();
-            this.callerAddress = mem.getDateAddress();
+            this.returnAddress = codeGeneratorFacade.getDateAddressMemory();
+            this.callerAddress = codeGeneratorFacade.getDateAddressMemory();
             this.parameters = new HashMap<>();
             this.localVariable = new HashMap<>();
         }
@@ -168,7 +165,7 @@ public class SymbolTable {
         }
 
         public void addParameter(String parameterName) {
-            parameters.put(parameterName, new Symbol(lastType, mem.getDateAddress()));
+            parameters.put(parameterName, new Symbol(lastType, codeGeneratorFacade.getDateAddressMemory()));
             orderdParameters.add(parameterName);
         }
 
