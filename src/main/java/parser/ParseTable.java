@@ -1,5 +1,6 @@
 package parser;
 
+import scanner.ScannerFacade;
 import scanner.token.Token;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ public class ParseTable {
     private ArrayList<Map<Token, Action>> actionTable;
     private ArrayList<Map<NonTerminal, Integer>> gotoTable;
 
+    private ScannerFacade scannerFacade;
+
     public ParseTable(String jsonTable) throws Exception {
         jsonTable = jsonTable.substring(2, jsonTable.length() - 2);
         String[] Rows = jsonTable.split("\\],\\[");
@@ -21,6 +24,7 @@ public class ParseTable {
         Map<Integer, NonTerminal> nonTerminals = new HashMap<Integer, NonTerminal>();
         Rows[0] = Rows[0].substring(1, Rows[0].length() - 1);
         String[] cols = Rows[0].split("\",\"");
+        scannerFacade = new ScannerFacade();
         for (int i = 1; i < cols.length; i++) {
             if (cols[i].startsWith("Goto")) {
                 String temp = cols[i].substring(5);
@@ -30,7 +34,7 @@ public class ParseTable {
                     temp = temp;
                 }
             } else {
-                terminals.put(i, new Token(Token.getTyepFormString(cols[i]), cols[i]));
+                terminals.put(i, scannerFacade.getNewToken(cols[i]));
             }
         }
         actionTable = new ArrayList<Map<Token, Action>>();

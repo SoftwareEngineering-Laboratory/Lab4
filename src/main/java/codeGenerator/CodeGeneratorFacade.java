@@ -1,6 +1,5 @@
 package codeGenerator;
 
-import com.sun.xml.internal.ws.developer.MemberSubmissionEndpointReference;
 import scanner.token.Token;
 
 import java.util.HashMap;
