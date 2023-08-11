@@ -21,7 +21,6 @@ public class CodeGenerator {
 
     public CodeGenerator() {
         symbolTable = new SymbolTable(memory);
-        //TODO
     }
 
     public void printMemory() {
@@ -136,7 +135,6 @@ public class CodeGenerator {
     }
 
     private void defMain() {
-        //ss.pop();
         memory.add3AddressCode(ss.pop().num, Operation.JP, new Address(memory.getCurrentCodeBlockAddress(), varType.Address), null, null);
         String methodName = "main";
         String className = symbolStack.pop();
@@ -147,13 +145,9 @@ public class CodeGenerator {
         symbolStack.push(methodName);
     }
 
-    //    public void spid(Token next){
-//        symbolStack.push(next.value);
-//    }
     public void checkID() {
         symbolStack.pop();
         if (ss.peek().varType == varType.Non) {
-            //TODO : error
         }
     }
 
@@ -214,7 +208,6 @@ public class CodeGenerator {
     }
 
     public void startCall() {
-        //TODO: method ok
         ss.pop();
         ss.pop();
         String methodName = symbolStack.pop();
@@ -222,12 +215,9 @@ public class CodeGenerator {
         symbolTable.startCall(className, methodName);
         callStack.push(className);
         callStack.push(methodName);
-
-        //symbolStack.push(methodName);
     }
 
     public void call() {
-        //TODO: method ok
         String methodName = callStack.pop();
         String className = callStack.pop();
         try {
@@ -244,20 +234,17 @@ public class CodeGenerator {
                 t = varType.Bool;
                 break;
         }
+        memory.incTemp();
         Address temp = new Address(memory.getTemp(), t);
         ss.push(temp);
         memory.add3AddressCode(Operation.ASSIGN, new Address(temp.num, varType.Address, TypeAddress.Imidiate), new Address(symbolTable.getMethodReturnAddress(className, methodName), varType.Address), null);
         memory.add3AddressCode(Operation.ASSIGN, new Address(memory.getCurrentCodeBlockAddress() + 2, varType.Address, TypeAddress.Imidiate), new Address(symbolTable.getMethodCallerAddress(className, methodName), varType.Address), null);
         memory.add3AddressCode(Operation.JP, new Address(symbolTable.getMethodAddress(className, methodName), varType.Address), null, null);
-
-        //symbolStack.pop();
     }
 
     public void arg() {
-        //TODO: method ok
 
         String methodName = callStack.pop();
-//        String className = symbolStack.pop();
         try {
             Symbol s = symbolTable.getNextParam(callStack.peek(), methodName);
             varType t = varType.Int;
@@ -275,8 +262,6 @@ public class CodeGenerator {
             }
             memory.add3AddressCode(Operation.ASSIGN, param, new Address(s.address, t), null);
 
-//        symbolStack.push(className);
-
         } catch (IndexOutOfBoundsException e) {
             ErrorHandler.printError("Too many arguments pass for method");
         }
@@ -287,18 +272,15 @@ public class CodeGenerator {
     public void assign() {
         Address s1 = ss.pop();
         Address s2 = ss.pop();
-//        try {
         if (s1.varType != s2.varType) {
             ErrorHandler.printError("The type of operands in assign is different ");
         }
-//        }catch (NullPointerException d)
-//        {
-//            d.printStackTrace();
-//        }
+
         memory.add3AddressCode(Operation.ASSIGN, s1, s2, null);
     }
 
     public void add() {
+        memory.incTemp();
         Address temp = new Address(memory.getTemp(), varType.Int);
         Address s2 = ss.pop();
         Address s1 = ss.pop();
@@ -311,6 +293,7 @@ public class CodeGenerator {
     }
 
     public void sub() {
+        memory.incTemp();
         Address temp = new Address(memory.getTemp(), varType.Int);
         Address s2 = ss.pop();
         Address s1 = ss.pop();
@@ -322,6 +305,7 @@ public class CodeGenerator {
     }
 
     public void mult() {
+        memory.incTemp();
         Address temp = new Address(memory.getTemp(), varType.Int);
         Address s2 = ss.pop();
         Address s1 = ss.pop();
@@ -329,7 +313,6 @@ public class CodeGenerator {
             ErrorHandler.printError("In mult two operands must be integer");
         }
         memory.add3AddressCode(Operation.MULT, s1, s2, temp);
-//        memory.saveMemory();
         ss.push(temp);
     }
 
@@ -361,6 +344,7 @@ public class CodeGenerator {
     }
 
     public void equal() {
+        memory.incTemp();
         Address temp = new Address(memory.getTemp(), varType.Bool);
         Address s2 = ss.pop();
         Address s1 = ss.pop();
@@ -372,6 +356,7 @@ public class CodeGenerator {
     }
 
     public void less_than() {
+        memory.incTemp();
         Address temp = new Address(memory.getTemp(), varType.Bool);
         Address s2 = ss.pop();
         Address s1 = ss.pop();
@@ -383,6 +368,7 @@ public class CodeGenerator {
     }
 
     public void and() {
+        memory.incTemp();
         Address temp = new Address(memory.getTemp(), varType.Bool);
         Address s2 = ss.pop();
         Address s1 = ss.pop();
@@ -394,6 +380,7 @@ public class CodeGenerator {
     }
 
     public void not() {
+        memory.incTemp();
         Address temp = new Address(memory.getTemp(), varType.Bool);
         Address s2 = ss.pop();
         Address s1 = ss.pop();
@@ -448,8 +435,6 @@ public class CodeGenerator {
     }
 
     public void methodReturn() {
-        //TODO : call ok
-
         String methodName = symbolStack.pop();
         Address s = ss.pop();
         SymbolType t = symbolTable.getMethodReturnType(symbolStack.peek(), methodName);
@@ -465,12 +450,9 @@ public class CodeGenerator {
         }
         memory.add3AddressCode(Operation.ASSIGN, s, new Address(symbolTable.getMethodReturnAddress(symbolStack.peek(), methodName), varType.Address, TypeAddress.Indirect), null);
         memory.add3AddressCode(Operation.JP, new Address(symbolTable.getMethodCallerAddress(symbolStack.peek(), methodName), varType.Address), null, null);
-
-        //symbolStack.pop();
     }
 
     public void defParam() {
-        //TODO : call Ok
         ss.pop();
         String param = symbolStack.pop();
         String methodName = symbolStack.pop();
@@ -488,9 +470,5 @@ public class CodeGenerator {
 
     public void lastTypeInt() {
         symbolTable.setLastType(SymbolType.Int);
-    }
-
-    public void main() {
-
     }
 }
